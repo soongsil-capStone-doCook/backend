@@ -8,6 +8,7 @@ import capstone.fridge.global.error.code.status.SuccessStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +26,9 @@ public class RecipeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_200", description = "OK, 성공적으로 조회되었습니다.")
     })
     public BaseResponse<List<RecipeResponseDTO.RecipeDTO>> recommendRecipes(
-            @RequestParam String kakaoId
+            @AuthenticationPrincipal Long memberId
     ) {
-        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendRecipes(kakaoId);
+        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendRecipes(memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE, result);
     }
 
@@ -37,9 +38,9 @@ public class RecipeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_200", description = "OK, 성공적으로 조회되었습니다.")
     })
     public BaseResponse<List<RecipeResponseDTO.RecipeDTO>> recommendMissingRecipes(
-            @RequestParam String kakaoId
+            @AuthenticationPrincipal Long memberId
     ) {
-        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendMissingRecipes(kakaoId);
+        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendMissingRecipes(memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE, result);
     }
 
@@ -49,9 +50,9 @@ public class RecipeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_202", description = "OK, 성공적으로 조회되었습니다.")
     })
     public BaseResponse<List<RecipeResponseDTO.RecipeDTO>> recommendScrapsRecipes(
-            @RequestParam String kakaoId
+            @AuthenticationPrincipal Long memberId
     ) {
-        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendScrapsRecipes(kakaoId);
+        List<RecipeResponseDTO.RecipeDTO> result = recipeService.recommendScrapsRecipes(memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE, result);
     }
 
@@ -73,9 +74,10 @@ public class RecipeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_204", description = "OK, 성공적으로 조회되었습니다.")
     })
     public BaseResponse<List<RecipeResponseDTO.RecipeDTO>> searchRecipe(
+            @AuthenticationPrincipal Long memberId,
             @ModelAttribute RecipeRequestDTO.SearchRecipeDTO request
     ) {
-        List<RecipeResponseDTO.RecipeDTO> result = recipeService.searchRecipe(request);
+        List<RecipeResponseDTO.RecipeDTO> result = recipeService.searchRecipe(memberId, request);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_FIND, result);
     }
 
@@ -86,9 +88,9 @@ public class RecipeRestController {
     })
     public BaseResponse<RecipeResponseDTO.RecipeScrapDTO> scrapRecipe(
             @PathVariable Long recipeId,
-            @RequestParam String kakaoId
+            @AuthenticationPrincipal Long memberId
     ) {
-        RecipeResponseDTO.RecipeScrapDTO result = recipeService.scrapRecipe(recipeId, kakaoId);
+        RecipeResponseDTO.RecipeScrapDTO result = recipeService.scrapRecipe(recipeId, memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_SCRAP, result);
     }
 
@@ -99,9 +101,9 @@ public class RecipeRestController {
     })
     public BaseResponse<Void> deleteScrapRecipe(
             @PathVariable Long recipeId,
-            @RequestParam String kakaoId
+            @AuthenticationPrincipal Long memberId
     ) {
-        recipeService.deleteScrapRecipe(recipeId, kakaoId);
+        recipeService.deleteScrapRecipe(recipeId, memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_DELETE_SCRAP, null);
     }
 }

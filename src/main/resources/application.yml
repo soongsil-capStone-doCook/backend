@@ -1,10 +1,19 @@
+# ==========================================
+# 1. 공통 설정 (Common)
+# ==========================================
 spring:
   profiles:
     active: dev
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
   datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/fridge?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
-    password: thdtjdghks2@
-    url: jdbc:mysql://localhost:3306/fridge
+    password: ${DB_PASSWORD:thdtjdghks2@}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -13,35 +22,78 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        show_sql: true
         format_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 1000
-
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.jdbc.core: DEBUG
+
+# ==========================================
+# 2. 로컬 개발 환경 (dev)
+# ==========================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
 app:
   fastapi:
     base-url: http://localhost:8001
+  embedding:
+    url: http://localhost:5000/embed
 
   kakao:
     client-id: ${KAKAO_CLIENT_ID}
-    client-secret: ${KAKAO_CLIENT_SECRET}   # 네 앱이 secret 쓰면
-    redirect-uri: ${KAKAO_REDIRECT_URI}     # 프론트 redirect uri
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
     jwt:
-      secret: ${JWT_SECRET}                   # 최소 32바이트 이상 권장
-      access-exp-sec: 3600                    # 1시간
-      refresh-exp-sec: 1209600                # 14일
+      secret: ${JWT_SECRET}
+      access-exp-sec: 3600
+      refresh-exp-sec: 1209600
 
 qdrant:
-  url: ${qdrant_URL}
+  url: ${qdrant_URL:localhost} # 없으면 localhost
   api-key: ${QDRANT_API_KEY}
 
+
+# ==========================================
+# 3. Docker 배포 환경 (prod)
+# ==========================================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # prod에서는 로그를 줄임
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+app:
+  fastapi:
+    # Docker Compose 서비스명 사용
+    base-url: http://fastapi-service:8000
+  embedding:
+    # Docker Compose 서비스명 사용
+    url: http://embedding-service:5000/embed
+
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+    jwt:
+      secret: ${JWT_SECRET}
+      access-exp-sec: 3600
+      refresh-exp-sec: 1209600
+
+qdrant:
+  url: qdrant-container # Docker 서비스명
+  api-key: ${QDRANT_API_KEY}

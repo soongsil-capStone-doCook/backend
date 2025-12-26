@@ -1,6 +1,7 @@
 package capstone.fridge.domain.recipe.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 public class EmbeddingService {
 
     // 파이썬 임베딩 서버 URL
-    private final String EMBEDDING_SERVER_URL = "http://localhost:5000/embed";
+    @Value("${app.embedding.url}")
+    private String embeddingServerUrl;
 
     public List<Float> getEmbedding(String text) {
         RestTemplate restTemplate = new RestTemplate();
@@ -21,7 +23,7 @@ public class EmbeddingService {
         Map<String, String> request = Map.of("text", text);
 
         // 1. 응답을 Map으로 받음
-        Map response = restTemplate.postForObject(EMBEDDING_SERVER_URL, request, Map.class);
+        Map response = restTemplate.postForObject(embeddingServerUrl, request, Map.class);
 
         List<Number> rawVector = (List<Number>) response.get("vector");
 
