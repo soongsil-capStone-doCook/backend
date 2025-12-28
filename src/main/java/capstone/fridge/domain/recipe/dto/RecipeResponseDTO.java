@@ -23,6 +23,7 @@ public class RecipeResponseDTO {
         private String cookTime;
         private String difficulty;
         private String servings;
+        private List<IngredientDTO> ingredients;
         private List<String> missingIngredients;
         @JsonProperty("isScrapped")
         private boolean isScrapped;

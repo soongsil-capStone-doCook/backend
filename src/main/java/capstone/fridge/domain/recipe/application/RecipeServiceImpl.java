@@ -332,11 +332,22 @@ public class RecipeServiceImpl implements RecipeService {
 
             Set<Long> scrapIds = getScrappedRecipeIds(memberId);
 
+            List<String> userIngredients = fridgeIngredientRepository.findIngredientNamesByMemberId(member.getId());
+
             return recipeIds.stream()
                     .filter(recipeMap::containsKey)
                     .map(id -> {
                         Recipe recipe = recipeMap.get(id);
-                        return RecipeConverter.toRecipeDTO(recipe, scrapIds.contains(recipe.getId()));
+
+                        List<String> recipeIngredientNames = recipe.getIngredients().stream()
+                                .map(RecipeIngredient::getName)
+                                .collect(Collectors.toList());
+
+                        List<String> missingIngredients = new ArrayList<>(recipeIngredientNames);
+
+                        missingIngredients.removeAll(userIngredients);
+
+                        return RecipeConverter.toRecipeDTO(recipe, missingIngredients, scrapIds.contains(recipe.getId()));
                     })
                     .collect(Collectors.toList());
 

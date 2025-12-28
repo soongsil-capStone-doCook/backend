@@ -24,6 +24,12 @@ public class RecipeConverter {
         // 이미지 URL 생성
         String s3Url = S3_BASE_URL + recipe.getId() + "/main.png";
 
+        List<RecipeResponseDTO.IngredientDTO> ingredientDTOs = recipe.getIngredients().stream()
+                .map(ri -> RecipeResponseDTO.IngredientDTO.builder()
+                        .name(ri.getName())
+                        .build())
+                .collect(Collectors.toList());
+
         return RecipeResponseDTO.RecipeDTO.builder()
                 .recipeId(recipe.getId())
                 .title(recipe.getTitle())
@@ -32,6 +38,7 @@ public class RecipeConverter {
                 .difficulty(recipe.getDifficulty())
                 .cookTime(recipe.getCookTime())
                 .servings(recipe.getServings())
+                .ingredients(ingredientDTOs)
                 .missingIngredients(missingIngredients)
                 .isScrapped(isScrapped)
                 .build();
