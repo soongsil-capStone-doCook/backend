@@ -13,13 +13,13 @@ public class RecipeConverter {
 
     private static final String S3_BASE_URL = "https://capstone-fridge.s3.ap-northeast-2.amazonaws.com/recipes/";
 
-    // 1. 부족한 재료가 없는 경우 (보유 재료 기반 추천용)
-    public static RecipeResponseDTO.RecipeDTO toRecipeDTO(Recipe recipe) {
-        return toRecipeDTO(recipe, Collections.emptyList());
+    // 1. 부족한 재료가 없는 경우 (보유 재료 기반 추천, 검색 등)
+    public static RecipeResponseDTO.RecipeDTO toRecipeDTO(Recipe recipe, boolean isScrapped) {
+        return toRecipeDTO(recipe, Collections.emptyList(), isScrapped);
     }
 
     // 2. 부족한 재료가 있는 경우 (부족한 재료 기반 추천용)
-    public static RecipeResponseDTO.RecipeDTO toRecipeDTO(Recipe recipe, List<String> missingIngredients) {
+    public static RecipeResponseDTO.RecipeDTO toRecipeDTO(Recipe recipe, List<String> missingIngredients, boolean isScrapped) {
 
         // 이미지 URL 생성
         String s3Url = S3_BASE_URL + recipe.getId() + "/main.png";
@@ -32,6 +32,7 @@ public class RecipeConverter {
                 .difficulty(recipe.getDifficulty())
                 .cookTime(recipe.getCookTime())
                 .missingIngredients(missingIngredients)
+                .isScrapped(isScrapped)
                 .build();
     }
 

@@ -23,6 +23,7 @@ public class RecipeResponseDTO {
         private String difficulty;
         private Integer servings;
         private List<String> missingIngredients;
+        private boolean isScrapped;
     }
 
     // 상세 조회용 DTO

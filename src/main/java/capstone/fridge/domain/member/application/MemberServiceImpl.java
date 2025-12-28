@@ -29,6 +29,7 @@ public class MemberServiceImpl implements MemberService {
     private final RecipeScrapRepository recipeScrapRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public MemberResponseDTO.UserInfoDTO getUserInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new memberException(ErrorStatus._BAD_REQUEST));
