@@ -31,12 +31,13 @@ public class RecipeConverter {
                 .mainImage(s3Url)
                 .difficulty(recipe.getDifficulty())
                 .cookTime(recipe.getCookTime())
+                .servings(recipe.getServings())
                 .missingIngredients(missingIngredients)
                 .isScrapped(isScrapped)
                 .build();
     }
 
-    public static RecipeResponseDTO.RecipeInfoDTO toRecipeInfoDTO(Recipe recipe) {
+    public static RecipeResponseDTO.RecipeInfoDTO toRecipeInfoDTO(Recipe recipe, boolean isScrapped) {
 
         // 1. 재료 리스트 변환
         List<RecipeResponseDTO.IngredientDTO> ingredientDTOs = recipe.getIngredients().stream()
@@ -47,13 +48,11 @@ public class RecipeConverter {
                         .build())
                 .collect(Collectors.toList());
 
-        // 2. 조리 순서 리스트 변환 (순서대로 정렬 필요)
+        // 2. 조리 순서 리스트 변환 (순서 정렬 + 이미지 URL)
         List<RecipeResponseDTO.StepDTO> stepDTOs = recipe.getSteps().stream()
-                .sorted(Comparator.comparing(RecipeStep::getStepOrder)) // 1, 2, 3... 순서 정렬
+                .sorted(Comparator.comparing(RecipeStep::getStepOrder))
                 .map(step -> {
-                    // Step 이미지 URL 생성 규칙 (파이썬 크롤러 로직 반영)
                     String stepImageUrl = S3_BASE_URL + recipe.getId() + "/steps/" + step.getStepOrder() + ".png";
-
                     return RecipeResponseDTO.StepDTO.builder()
                             .order(step.getStepOrder())
                             .content(step.getContent())
@@ -67,12 +66,13 @@ public class RecipeConverter {
                 .recipeId(recipe.getId())
                 .title(recipe.getTitle())
                 .description(recipe.getDescription())
-                .mainImage(S3_BASE_URL + recipe.getId() + "/main.png") // 메인 이미지
+                .mainImage(S3_BASE_URL + recipe.getId() + "/main.png")
                 .servings(recipe.getServings())
                 .cookTime(recipe.getCookTime())
                 .difficulty(recipe.getDifficulty())
                 .ingredients(ingredientDTOs)
                 .steps(stepDTOs)
+                .isScrapped(isScrapped)
                 .build();
     }
 }

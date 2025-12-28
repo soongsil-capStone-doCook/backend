@@ -1,5 +1,6 @@
 package capstone.fridge.domain.recipe.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +22,9 @@ public class RecipeResponseDTO {
         private String mainImage; // S3 URL
         private String cookTime;
         private String difficulty;
-        private Integer servings;
+        private String servings;
         private List<String> missingIngredients;
+        @JsonProperty("isScrapped")
         private boolean isScrapped;
     }
 
@@ -41,6 +43,8 @@ public class RecipeResponseDTO {
         private String difficulty; // 난이도
         private List<IngredientDTO> ingredients;
         private List<StepDTO> steps;
+        @JsonProperty("isScrapped")
+        private boolean isScrapped;
     }
 
     // 재료 정보 DTO

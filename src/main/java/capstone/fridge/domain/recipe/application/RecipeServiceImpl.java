@@ -252,16 +252,25 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public RecipeResponseDTO.RecipeInfoDTO getRecipe(Long recipeId) {
-        // 1. 레시피 조회 (없으면 예외 발생)
+    @Transactional
+    public RecipeResponseDTO.RecipeInfoDTO getRecipe(Long recipeId, Long memberId) {
+        // 1. 레시피 조회
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new recipeException(ErrorStatus._RECIPE_NOT_FOUND));
 
-        // 2. 조회수 증가 로직 (선택 사항: 상세 조회 시 조회수 +1)
-        recipe.increaseViewCount();
+        // 2. 조회수 증가
+        recipe.increaseViewCount(); // 메서드명 확인
 
-        // 3. Converter를 통해 상세 DTO 변환 및 반환
-        return RecipeConverter.toRecipeInfoDTO(recipe);
+        // 3. 찜 여부 확인 로직
+        boolean isScrapped = false;
+
+        // 로그인한 사용자(memberId가 있는 경우)만 DB 조회
+        if (memberId != null) {
+            isScrapped = recipeScrapRepository.existsByMemberIdAndRecipeId(memberId, recipeId);
+        }
+
+        // 4. Converter 호출 (isScrapped 전달)
+        return RecipeConverter.toRecipeInfoDTO(recipe, isScrapped);
     }
 
     @Override

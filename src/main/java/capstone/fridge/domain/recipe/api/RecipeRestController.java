@@ -62,13 +62,14 @@ public class RecipeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_203", description = "OK, 성공적으로 조회되었습니다.")
     })
     public BaseResponse<RecipeResponseDTO.RecipeInfoDTO> getRecipe(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable Long recipeId
     ) {
-        RecipeResponseDTO.RecipeInfoDTO result = recipeService.getRecipe(recipeId);
+        RecipeResponseDTO.RecipeInfoDTO result = recipeService.getRecipe(recipeId, memberId);
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_INFO, result);
     }
 
-    @GetMapping("/recommend/search")
+    @GetMapping("/search")
     @Operation(summary = "레시피 검색 API", description = "사용자의 검색 조건에 부합하는 레시피를 반환")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_204", description = "OK, 성공적으로 조회되었습니다.")
@@ -81,7 +82,7 @@ public class RecipeRestController {
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_FIND, result);
     }
 
-    @PostMapping("/recommend/{recipeId}/scrap")
+    @PostMapping("/{recipeId}/scrap")
     @Operation(summary = "레시피 찜하기 API", description = "사용자가 마음에 드는 레시피를 찜")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_205", description = "OK, 성공적으로 찜 되었습니다.")
@@ -94,7 +95,7 @@ public class RecipeRestController {
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_SCRAP, result);
     }
 
-    @DeleteMapping("/recommend/{recipeId}/scrap")
+    @DeleteMapping("/{recipeId}/scrap")
     @Operation(summary = "레시피 찜 취소하기 API", description = "사용자가 한 찜을 취소")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_206", description = "OK, 성공적으로 취소되었습니다.")
