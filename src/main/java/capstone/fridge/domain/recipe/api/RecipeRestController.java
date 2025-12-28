@@ -69,7 +69,7 @@ public class RecipeRestController {
         return BaseResponse.onSuccess(SuccessStatus.RECIPE_INFO, result);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/recommend/search")
     @Operation(summary = "레시피 검색 API", description = "사용자의 검색 조건에 부합하는 레시피를 반환")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse( responseCode = "RECIPE_204", description = "OK, 성공적으로 조회되었습니다.")
